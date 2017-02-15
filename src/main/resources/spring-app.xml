@@ -111,7 +111,7 @@ http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
         <aop:advisor pointcut-ref="pc" advice-ref="txAdvice"/>
     </aop:config>
     <!--  支持@Transactional注解 -->
-    <tx:annotation-driven />
+    <tx:annotation-driven transaction-manager="transactionManager"/>
     
     <!--  mybatis-plus start-->
     <!-- 配置mybatis org.mybatis.spring.SqlSessionFactoryBean-->

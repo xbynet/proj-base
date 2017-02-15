@@ -23,7 +23,7 @@ public class MPGenerator {
 
         // 全局配置
         GlobalConfig gc = new GlobalConfig();
-        gc.setOutputDir("D://");
+        gc.setOutputDir("F:\\share\\code");
         gc.setFileOverride(true);
         gc.setActiveRecord(true);
         gc.setEnableCache(false);// XML 二级缓存
@@ -44,7 +44,7 @@ public class MPGenerator {
         dsc.setDriverName("com.mysql.jdbc.Driver");
         dsc.setUsername("root");
         dsc.setPassword("1234");
-        dsc.setUrl("jdbc:mysql://127.0.0.1:3306/test?characterEncoding=utf8");
+        dsc.setUrl("jdbc:mysql://127.0.0.1:3306/sakila?characterEncoding=utf8");
         mpg.setDataSource(dsc);
 
         // 策略配置
