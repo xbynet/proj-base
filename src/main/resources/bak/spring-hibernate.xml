@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:task="http://www.springframework.org/schema/task"
+	 xmlns:cache="http://www.springframework.org/schema/cache"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd
+http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
+http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.2.xsd
+http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd">
+	<!-- 指定需要扫描的包并注册为bean，该元素可以有多个 <context:component-scan base-package="net.xby1993.springmvc" 
+		/> -->
+	<context:component-scan base-package="net.xby1993.springmvc">
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+	</context:component-scan>
+	<aop:aspectj-autoproxy proxy-target-class="true" /> <!--  支持注解AOP，基于CGLIB代理 -->
+	<!-- 为了在Spring中使用@PersistenceContext实现EntityManager注入 -->
+	<bean
+		class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
+	<!-- 引入配置文件 -->
+	<context:property-placeholder location="classpath:cfg.properties,classpath:common.properties"/>	
+ <!-- 数据源配置 -->  
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"  
+        init-method="init" destroy-method="close">  
+        <!-- 驱动名称 -->  
+        <property name="DriverClassName" value="com.mysql.jdbc.Driver" />  
+        <!-- JDBC连接串 -->  
+        <property name="url"  
+            value="${jdbc.url}" />  
+        <!-- 数据库用户名称 -->  
+        <property name="username" value="${jdbc.username}" />  
+        <!-- 数据库密码 -->  
+        <property name="password" value="${jdbc.password}" />  
+        <!-- 连接池最大使用连接数量 -->  
+        <property name="maxActive" value="${druid.maxActive}" />  
+        <!-- 初始化大小 -->  
+        <property name="initialSize" value="${druid.initialSize}" />  
+        <!-- 获取连接最大等待时间 -->  
+        <property name="maxWait" value="${druid.maxWait}" />  
+        <!-- 连接池最小空闲 -->  
+        <property name="minIdle" value="${druid.minIdle}" />  
+        <!-- 逐出连接的检测时间间隔 -->  
+        <property name="timeBetweenEvictionRunsMillis" value="${druid.timeBetweenEvictionRunsMillis}" />  
+        <!-- 最小逐出时间 -->  
+        <property name="minEvictableIdleTimeMillis" value="${druid.minEvictableIdleTimeMillis}" />  
+        <!-- 测试有效用的SQL Query -->  
+        <property name="validationQuery" value="${druid.validationQuery}" />  
+        <!-- 连接空闲时测试是否有效 -->  
+        <property name="testWhileIdle" value="${druid.testWhileIdle}" />  
+        <!-- 获取连接时测试是否有效 -->  
+        <property name="testOnBorrow" value="${druid.testOnBorrow}" />  
+        <!-- 归还连接时是否测试有效 -->  
+        <property name="testOnReturn" value="${druid.testOnReturn}" />  
+        </bean>
+
+	<!-- JPA实体工厂配置 -->  
+    <bean id="emf"  
+        class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">  
+        <property name="dataSource" ref="dataSource" />  
+        <!-- 扫描实体路径 -->  
+        <property name="packagesToScan" value="net.xby1993.springmvc.**.entity" />  
+        <property name="jpaVendorAdapter">  
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">   
+                <property name="database" value="MYSQL" />
+    			<property name="showSql" value="true"/>
+    			<property name="generateDdl" value="true"/>
+    			<property name="databasePlatform" value="org.hibernate.dialect.MySQL5InnoDBDialect" />
+            </bean>  
+        </property> 
+        <property name="jpaProperties">
+			<props>
+				<!-- 命名规则 My_NAME->MyName java驼峰变db下划线命名-->
+				<prop key="hibernate.ejb.naming_strategy">org.hibernate.cfg.ImprovedNamingStrategy</prop>
+				<prop key="hibernate.current_session_context_class">org.springframework.orm.hibernate4.SpringSessionContext</prop>
+			</props>
+		</property> 
+        
+    </bean>  
+	<!--指定事物管理器 bean -->
+	<bean id="txManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="emf" />
+	</bean>
+	<!-- Spring Data Jpa配置 -->
+	<jpa:repositories base-package="net.xby1993.**.dao"
+		transaction-manager-ref="txManager"
+		entity-manager-factory-ref="emf" repository-impl-postfix="Impl"
+		factory-class="net.xby1993.springmvc.dao.DefaultRepositoryFactoryBean"
+		>
+	</jpa:repositories>
+	<bean
+		class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
+	<!-- 开启Spring提供的基于注解的声明式事务管理 -->
+	<tx:annotation-driven transaction-manager="txManager" proxy-target-class="true"/>
+		<tx:advice id="serviceAdvice" transaction-manager="txManager">
+		<tx:attributes>
+			<tx:method name="save*" propagation="REQUIRED" />
+			<tx:method name="add*" propagation="REQUIRED" />
+			<tx:method name="update*" propagation="REQUIRED" />
+			<tx:method name="del*" propagation="REQUIRED" />
+			<tx:method name="find*" propagation="REQUIRED" />
+			<tx:method name="execute*" propagation="REQUIRED" />
+			<tx:method name="*" propagation="REQUIRED" />
+			
+			<!--  <tx:method name="*" propagation="SUPPORTS" /> -->
+		</tx:attributes>
+	</tx:advice>
+	<!-- 配置参与事务的类 -->
+	<aop:config>
+		<aop:pointcut id="servicePointcut"
+			expression="execution(* net.xby1993.springmvc.service.*.*(..))" />
+		<aop:advisor advice-ref="serviceAdvice" pointcut-ref="servicePointcut" />
+		
+	</aop:config>
+
+	<!-- 配置邮件发送器 -->
+	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl"
+
+		p:host="${mail.host}" p:port="${mail.port}" p:username="${mail.name}"
+		p:password="${mail.password}">
+		<property name="defaultEncoding" value="UTF-8" />
+		<!-- <property name="javaMailProperties"> <props> <prop key="mail.smtp.auth">true</prop> 
+			<prop key="mail.smtp.socketFactory.port">587</prop> <prop key="mail.smtp.socketFactory.class">javax.net.ssl.SSLSocketFactory</prop> 
+			<prop key="mail.smtp.socketFactory.fallback">false</prop> </props> </property> -->
+		<!-- SMTP服务器验证 -->
+		<property name="javaMailProperties">
+			<props>
+				<!-- 验证身份 -->
+				<prop key="mail.smtps.auth">true</prop>
+
+			</props>
+		</property>
+	</bean>
+
+<!-- 缓存 -->
+<bean id="ehcacheMF" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">  
+    <property name="configLocation" value="classpath:ehcache.xml"/>  
+</bean>  
+<bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager">  
+    <property name="cacheManager" ref="ehcacheMF"/>  
+    <property name="transactionAware" value="true"/>  
+</bean> 
+<cache:annotation-driven cache-manager="cacheManager" proxy-target-class="true"/> 
+
+	<!-- 任务调度 -->
+<task:annotation-driven executor="myExecutor" scheduler="myScheduler"/>
+<task:executor id="myExecutor" pool-size="5"/>
+<task:scheduler id="myScheduler" pool-size="10"/>
+</beans>
