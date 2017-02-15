@@ -46,7 +46,7 @@ http://www.springframework.org/schema/task http://www.springframework.org/schema
 		class="org.springframework.context.support.ConversionServiceFactoryBean">
 		<property name="converters">
 			<set>
-				<bean class="net.xby1993.springmvc.util.TimestampConverter"></bean>
+				<bean class="net.xby1993.common.util.TimestampConverter"></bean>
 			</set>
 		</property>
 	</bean>

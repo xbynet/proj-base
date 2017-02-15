@@ -11,12 +11,12 @@
 	<!-- <typeAliases>
 		<typeAlias type="demo.User" alias="User"/>
 	</typeAliases> -->
-	<plugins>
-	<!--https://github.com/pagehelper/Mybatis-PageHelper/blob/master/wikis/en/HowToUse.md  -->
+	<!--<plugins>
+	https://github.com/pagehelper/Mybatis-PageHelper/blob/master/wikis/en/HowToUse.md 
     <plugin interceptor="com.github.pagehelper.PageInterceptor">
-        <!-- config params as the following -->
         <property name="helperDialect" value="mysql"/>
         <property name="reasonable" value="true"/>
     </plugin>
-</plugins>
+    
+</plugins> -->
 </configuration>

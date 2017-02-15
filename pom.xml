@@ -80,6 +80,8 @@
 			<artifactId>javassist</artifactId>
 			<version>3.20.0-GA</version>
 		</dependency>
+		<!-- 
+		mybatis原生配置
 		<dependency>
 			<groupId>org.mybatis</groupId>
 			<artifactId>mybatis</artifactId>
@@ -94,7 +96,17 @@
     		<groupId>com.github.pagehelper</groupId>
     		<artifactId>pagehelper</artifactId>
     		<version>5.0.0</version>
-		</dependency>
+		</dependency> -->
+		<dependency>
+    <groupId>com.baomidou</groupId>
+    <artifactId>mybatis-plus</artifactId>
+    <version>2.0.2</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.velocity</groupId>
+    <artifactId>velocity</artifactId>
+    <version>1.7</version>
+</dependency>
 		<dependency>
 			<groupId>cglib</groupId>
 			<artifactId>cglib</artifactId><!-- cglib-nodep -->
@@ -290,10 +302,11 @@
 					<source>${java.version}</source>
 					<target>${java.version}</target>
 					<encoding>${project.encoding}</encoding>
-				</configuration>
-				<compilerArguments>
+					<compilerArguments>
 						<extdirs>src/main/webapp/WEB-INF/lib</extdirs>
-				</compilerArguments>
+					</compilerArguments>
+				</configuration>
+				
 			</plugin>
 
 			<plugin>

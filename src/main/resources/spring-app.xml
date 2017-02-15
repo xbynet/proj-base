@@ -113,8 +113,9 @@ http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
     <!--  支持@Transactional注解 -->
     <tx:annotation-driven />
     
-    <!-- 配置mybatis -->
-    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+    <!--  mybatis-plus start-->
+    <!-- 配置mybatis org.mybatis.spring.SqlSessionFactoryBean-->
+    <bean id="sqlSessionFactory" class="com.baomidou.mybatisplus.spring.MybatisSqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource"/>
         <property name="configLocation" value="classpath:mybatis/mybatis-config.xml"></property>
         <!-- mapper扫描 -->
@@ -126,8 +127,50 @@ http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
         	</list>
         	 -->
         </property>
+        <!-- 插件配置 -->
+    	<property name="plugins">
+        	<array>
+            	<!-- 分页插件配置 -->
+            	<bean id="paginationInterceptor" class="com.baomidou.mybatisplus.plugins.PaginationInterceptor">
+                	<!-- 指定数据库方言 -->
+                	<property name="dialectType" value="mysql"/>
+            	</bean>
+            	<!-- 如需要开启其他插件，可配置于此 -->
+        </array>
+    	</property>
+    	<!-- MP 全局配置注入 -->
+    	<property name="globalConfig" ref="globalConfig" />
+    
     </bean>
-
+<bean id="globalConfig" class="com.baomidou.mybatisplus.entity.GlobalConfiguration">
+    <!-- MP 主键策略配置
+        AUTO->`0`("数据库ID自增")
+        INPUT->`1`(用户输入ID")
+        ID_WORKER->`2`("全局唯一ID")
+        UUID->`3`("全局唯一ID")
+    -->
+    <property name="idType" value="2" />
+    <!--
+        MYSQL->`mysql`
+        ORACLE->`oracle`
+        DB2->`db2`
+        H2->`h2`
+        HSQL->`hsql`
+        SQLITE->`sqlite`
+        POSTGRE->`postgresql`
+        SQLSERVER2005->`sqlserver2005`
+        SQLSERVER->`sqlserver`
+    -->
+    
+    <!-- Oracle需要添加该项 -->
+    <!-- <property name="dbType" value="oracle" /> -->
+    <property name="dbType" value="mysql" />
+    <!-- 全局表为下划线命名设置 true -->
+    <!-- <property name="dbColumnUnderline" value="true" /> -->
+    <property name="dbColumnUnderline" value="true" />
+</bean>
+ <!--  mybatis-plus end-->
+ 
     <bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
         <constructor-arg ref="sqlSessionFactory"/>
     </bean>
